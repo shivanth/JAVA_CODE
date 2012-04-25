@@ -306,11 +306,19 @@ public class FIC {
  
  
         //int a[] = {(Math.abs(r.nextInt()) % (p.length - 2)) + 1, (Math.abs(r.nextInt()) % (p.length - 2)) + 1};
+            Dimension d=null;
         if (maxi == 0 || maxj == 0) {
-            Dimension d = (Dimension) (Heuristic_data.get((Math.abs(r.nextInt()) % (Heuristic_data.size() - 1)) + 1));//(iter.next());
-            maxi = d.width;
-            maxj = d.height;
-            Heuristic_data.remove(d);
+            if(Heuristic_data.size()==1){
+                d=(Dimension)Heuristic_data.get(0);
+                Heuristic_data.remove(d);
+            }
+            else {
+                d = (Dimension) (Heuristic_data.get((Math.abs(r.nextInt()) % (Heuristic_data.size()-1))+1 ));
+            //(iter.next());
+                maxi = d.width;
+                maxj = d.height;
+                Heuristic_data.remove(d);
+            }
  
  
         }
