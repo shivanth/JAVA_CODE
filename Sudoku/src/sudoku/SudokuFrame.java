@@ -13,19 +13,22 @@ package sudoku;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.lang.reflect.InvocationTargetException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
+import sun.swing.SwingUtilities2;
 
 /**
  *
  * @author Shivanth
  */
 public class SudokuFrame extends javax.swing.JFrame implements ActionListener {
-
+     SudokuTable maintable=null;
     /** Creates new form NewJFrame */
     public SudokuFrame() {
         super();
@@ -47,7 +50,7 @@ public class SudokuFrame extends javax.swing.JFrame implements ActionListener {
        for (int i = 0; i < 9; i++) {
             panel[i] = new SudokuRow(t.getrow(i+1));
             
-            add(panel[i]);
+            add(getPanel()[i]);
         }
          
         //getContentPane().add(action);
@@ -60,7 +63,7 @@ public class SudokuFrame extends javax.swing.JFrame implements ActionListener {
     public int getData(int row, int col) {
 
 
-        return panel[row].getBox(col);
+        return getPanel()[row].getBoxValue(col);
 
     }
 
@@ -78,7 +81,7 @@ public class SudokuFrame extends javax.swing.JFrame implements ActionListener {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-    SudokuRow panel[];
+    private SudokuRow panel[];
     JPanel action;
     JButton _OK;
     SudokuTable table;
@@ -87,90 +90,48 @@ public class SudokuFrame extends javax.swing.JFrame implements ActionListener {
    
 
     public void actionPerformed(ActionEvent e) {
-        boolean done = false;
-        ProbTable prob[] = new ProbTable[10];
-        SudokuTable maintable = new SudokuTable();
-        for (int i = 1; i < 10; i++) {
-            prob[i] = new ProbTable();
-        }
-
-
-
-         maintable=getdata();
-
-         for(int i=1;i<10;i++){
-             try{
-             prob[i].init_fill_table(maintable, i);
-             }
-             catch(DataInvalidException ex){
-
-             }
-             catch(ErrorInTable ex){
-
-             }
-         }
-
-
-
-
-         while (!done) {
-            done = true;
-            for (int i = 1; i < 10; i++) {
-                if (prob[i].scan_table(maintable)) {
-                    done = false;
-                    for (int j = 1; j < 10; j++) {
-                        if (j == i) {
-
-
-                            try {
-                                prob[i].kill_row(ProbTable.getROW());
-                                prob[i].kill_column(ProbTable.getCOLUMN());
-                                prob[i].kill_box(ProbTable.getROW(), ProbTable.getCOLUMN());
-                                prob[i].writecell(ProbTable.getROW(), ProbTable.getCOLUMN(), 27);
-                                maintable.setdata(ProbTable.getROW(), ProbTable.getCOLUMN(), i);
-                                System.out.print(maintable);
-                                System.out.println("");
-                                System.out.println("");
-
-                            } catch (ErrorInTable ex) {
-                                Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-                            }
-                            prob[i].writecell(ProbTable.getROW(), ProbTable.getCOLUMN(), 27);
-                            continue;
-                        } else {
-                            prob[j].killcell(ProbTable.getROW(), ProbTable.getCOLUMN());
-                        }
-                    }
-                }
+        try {
+            //;
+             maintable = getdata();
+            SwingUtilities.invokeLater(new Runnable(){
+            public void run(){
+                Main.main_loop(maintable);
             }
-
+        });
+               
+        
+        } catch (Exception ex) {
+            Logger.getLogger(SudokuFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
-         if(maintable.issolved()){
-             this.setVisible(false);
-             setdata(maintable);
-                        
-             this.repaint();
-             this.pack();
-             this.setVisible(true);
-         }
-         else {
-             final JDialog jd=new JDialog();
-             jd.add(new JLabel("The Data entered iserreneous or insufficient"));
-            
-             
-            JButton b = new JButton();
-             b.addActionListener(new ActionListener(){
-
-                public void actionPerformed(ActionEvent e) {
-                    jd.setVisible(false);
-                }
+    }
+    
+    public void display_results(SudokuTable maintable){
+             if(maintable.issolved()){
+                 this.setVisible(false);
+                 setdata(maintable);
+                            
+                 this.repaint();
+                 this.pack();
+                 this.setVisible(true);
+             }
+             else {
+                 final JDialog jd=new JDialog();
+                 jd.add(new JLabel("The Data entered iserreneous or insufficient"));
+                
                  
-             });
-             jd.setLayout(new FlowLayout());
-             jd.add(b);
-              jd.pack();
-              jd.setVisible(true);
-         }
+                JButton b = new JButton();
+                 b.addActionListener(new ActionListener(){
+
+                    public void actionPerformed(ActionEvent e) {
+                        jd.setVisible(false);
+                    }
+                     
+                 });
+                 jd.setLayout(new FlowLayout());
+                 jd.add(b);
+                  jd.pack();
+                  jd.setVisible(true);
+             }
     }
     @SuppressWarnings("empty-statement")
     public SudokuTable getdata(){
@@ -195,4 +156,14 @@ public class SudokuFrame extends javax.swing.JFrame implements ActionListener {
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     // End of variables declaration//GEN-END:variables
+
+    /**
+     * @return the panel
+     */
+    public SudokuRow[] getPanel() {
+        return panel;
+    }
+    public JButton getJButton(){
+        return this._OK;
+    }
 }

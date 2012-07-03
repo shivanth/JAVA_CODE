@@ -37,10 +37,13 @@ public class SudokuTable {
      }
 
     public boolean issolved(){
+        if (Main.isRunning()){
+            return false;
+        }
         for (int i=1;i<10;i++){
             for (int j=1;j<10;j++){
              if(getdata(i,j)<1 || getdata(i,j)>9)
-                 return false;
+                 return false;//If everything is solved then all columns will be having values from 1 to 9 and not zeroes
             }
         }
         return true;

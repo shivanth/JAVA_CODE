@@ -11,7 +11,8 @@ package sudoku;
 public class ProbTable {
 
     private static int ROW, COLUMN;
-    private static final int GUESS_CONST = 10, GUESS_MAX = 27;
+    public static final int GUESS_CONST = 10, GUESS_MAX = 25;
+    static int count;
 
     /**
      * @param aROW the ROW to set
@@ -68,8 +69,8 @@ public class ProbTable {
             for (int k = 1; k < 10; k++) {
                 if (maintable.getdata(i, k) == 0) {
                     continue;
-                } else if (maintable.getdata(i, k) == index) {
-
+                } else if (maintable.getdata(i, k) == index) {  // make all the values for rows,column and
+                                                                // box so that we dont search in those columns anymore
                     kill_row(i);
                     kill_column(k);
                     kill_box(i,k);
@@ -86,23 +87,30 @@ public class ProbTable {
     /**Scans the probtable for any insertions that are
      * possible nto main table */
     public boolean scan_table(SudokuTable table) {
+        
         int row_or_col;
         for (int l = 1; l < 10; l++) {
             if ((row_or_col = scan_row(l)) != -1) {
                 
                 setROW(l);
                 setCOLUMN(row_or_col);
+                count=0;
                 return true;
 
             } else if ((row_or_col = scan_column(l)) != -1) {
                 setROW(row_or_col);
                 setCOLUMN(l);
+                count=0;
                 return true;
 
             }
             else if(scan_box(l)!=-1)
+                count=0;
                 return true;
         }
+        count++;
+        if(count>10)
+            Main.setRunning(false);
         return false;
     }
 
@@ -134,6 +142,7 @@ public class ProbTable {
         data[row][col] = -1;
         for (int k = 1; k < 10; k++) {
             if (k == col) {
+                inc(k,col);
                 continue;
             }
             inc(row, k);

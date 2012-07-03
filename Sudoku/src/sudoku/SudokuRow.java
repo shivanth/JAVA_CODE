@@ -43,7 +43,7 @@ public class SudokuRow extends javax.swing.JPanel {
         this.setLayout(new FlowLayout());
     }
 
-    public int getBox(int i){
+    public int getBoxValue(int i){
         try{
             if(tb[i].getText().equals(""))
                 return 0;
@@ -55,6 +55,10 @@ public class SudokuRow extends javax.swing.JPanel {
         }
 
     }
+    public JTextField getBox(int i){
+        return this.tb[i];
+    }
+    
 
     /** This method is called from within the constructor to
      * initialize the form.
