@@ -93,11 +93,13 @@ public class SudokuFrame extends javax.swing.JFrame implements ActionListener {
         try {
             //;
              maintable = getdata();
-            SwingUtilities.invokeLater(new Runnable(){
-            public void run(){
-                Main.main_loop(maintable);
-            }
-        });
+            Thread thread = new Thread (new Runnable(){
+                                public void run(){
+                                Main.main_loop(maintable);
+                            }
+                        });
+            thread.start();
+            
                
         
         } catch (Exception ex) {

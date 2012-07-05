@@ -4,6 +4,8 @@
  */
 package sudoku;
 
+import java.util.logging.Logger;
+
 /**
  *
  * @author Shivanth
@@ -13,6 +15,7 @@ public class ProbTable {
     private static int ROW, COLUMN;
     public static final int GUESS_CONST = 10, GUESS_MAX = 25;
     static int count;
+    public static Logger log;
 
     /**
      * @param aROW the ROW to set
@@ -85,32 +88,35 @@ public class ProbTable {
     }
 
     /**Scans the probtable for any insertions that are
-     * possible nto main table */
+     * possible into main table */
     public boolean scan_table(SudokuTable table) {
         
-        int row_or_col;
-        for (int l = 1; l < 10; l++) {
-            if ((row_or_col = scan_row(l)) != -1) {
+        int a;
+        for (int b = 1; b < 10; b++) {
+            if ((a = scan_row(b)) != -1) {
                 
-                setROW(l);
-                setCOLUMN(row_or_col);
+                setROW(b);
+                setCOLUMN(a);
                 count=0;
                 return true;
 
-            } else if ((row_or_col = scan_column(l)) != -1) {
-                setROW(row_or_col);
-                setCOLUMN(l);
+            } else if ((a = scan_column(b)) != -1) {
+                setROW(a);
+                setCOLUMN(b);
                 count=0;
                 return true;
 
             }
-            else if(scan_box(l)!=-1)
+            else if(scan_box(b)!=-1){
                 count=0;
                 return true;
+            }
         }
         count++;
-        if(count>10)
-            Main.setRunning(false);
+        if(count>9000){
+            log.warning("Set running=false@");
+            //Main.setRunning(false);
+        }
         return false;
     }
 
@@ -125,7 +131,6 @@ public class ProbTable {
      * cell is positive or less than the allowed Maximum */
     private void inc(int row, int col) {
         if (data[row][col] == -1) {
-            return;
         } else if (data[row][col] < GUESS_MAX) {
             data[row][col]++;
         }
@@ -133,18 +138,20 @@ public class ProbTable {
 
     /**
      *@param row  sets the cell corresponding to row,col to -1 and
-     *increments the probability of the probability of all the cells in that
+     *increments the probability of all other the cells in that
      *row ,column and box
      *@param col sets the cell corresponding to row,col to -1 and
      *increments the probability of the probability of all the cells in that
      *row ,column and box*/
-    public void killcell(int row, int col) {
+    public void killcell(int row, int col) { // Making the logic more obvious
         data[row][col] = -1;
         for (int k = 1; k < 10; k++) {
             if (k == col) {
-                inc(k,col);
+                //inc(k,col);
                 continue;
             }
+        }
+        for (int k = 1; k < 10; k++) {
             inc(row, k);
             if (k == row) {
                 continue;
@@ -247,6 +254,8 @@ public class ProbTable {
 
     /**kills a complete row by setting its value to -1
      *@param row Row to be killed
+     * - Note** Kills all the 9 cells - Has to update one of the cells to positive value inorder 
+     * to make the row  active
      * @throws ErrorInTable if a cell tat has been alredy filled is to be killed
      *
      */
@@ -259,7 +268,13 @@ public class ProbTable {
             }
         }
     }
-
+/**kills a complete col by setting its value to -1
+     *@param col column to be killed
+     * - Note** Kills all the 9 cells - Has to update one of the cells to positive value inorder 
+     * to make the col active
+     * @throws ErrorInTable if a cell tat has been already filled is to be killed
+     *
+     */
     void kill_column(int col) throws ErrorInTable {
         for (int i = 1; i < 10; i++) {
             if (data[i][col] == GUESS_MAX) {
@@ -269,6 +284,13 @@ public class ProbTable {
             }
         }
     }
+/**kills a complete box by setting its value to -1
+     *@param box Box to be killed
+     * - Note** Kills all the 9 cells - Has to update one of the cells to positive value inorder 
+     * to make the box active
+     * @throws ErrorInTable if a cell tat has been alredy filled is to be killed
+     *
+     */
 
     void kill_box(int row, int col) throws ErrorInTable {
         for (int i = ((row-1) / 3) * 3 + 1; i < ((row-1) / 3) * 3 + 4; i++) {
