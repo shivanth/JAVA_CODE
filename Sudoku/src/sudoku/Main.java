@@ -20,6 +20,7 @@ public class Main {
     private static boolean running = true;
     private static SudokuFrame sf;
     static final Logger log = Logger.getLogger("MyLog");
+    public static final Object lock=new Object();
 
     /**
      * @param args the command line arguments
@@ -53,12 +54,17 @@ public class Main {
         
         sf = new SudokuFrame();
         getSf().pack();
+        while(running){
         getSf().setVisible(true);
+        try {
+            lock.wait();
 
 
-
-        //System.out.print(maintable);
-
+                    //System.out.print(maintable);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        }
         
     }
     
@@ -107,7 +113,7 @@ public class Main {
                                 
                             } catch (ErrorInTable ex) {
                                 log.severe("Error in table");
-                                System.exit(1);
+                                //System.exit(1);
                             }
                             //prob[i].writecell(ProbTable.getROW(), ProbTable.getCOLUMN(), ProbTable.GUESS_MAX);
                             continue;
@@ -119,10 +125,18 @@ public class Main {
                 else 
                     log.log(Level.INFO, "Scan table failed for {0}", i);
             }
+            if(done&&isRunning()){
+                //guessing logic goes here
+                
+            }
             log.info(maintable.toString());
             log.log(Level.INFO,"Done:{0}"+" "+"IsRunning:{1}", new Object[]{done, isRunning()});
         }
         sf.display_results(maintable);
+        
+        synchronized(lock){
+        lock.notifyAll();
+        }
     }
     /*
      * @SuppressWarnings("empty-statement") public static void
