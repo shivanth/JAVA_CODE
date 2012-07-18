@@ -4,6 +4,8 @@
  */
 package sudoku;
 
+import java.lang.reflect.Array;
+import java.util.Arrays;
 import java.util.logging.Logger;
 
 /**
@@ -92,7 +94,9 @@ public class ProbTable {
     public boolean scan_table(SudokuTable table) {
         
         int a;
+        Main.setRunning(true);
         for (int b = 1; b < 10; b++) {
+            
             if ((a = scan_row(b)) != -1) {
                 
                 setROW(b);
@@ -113,9 +117,10 @@ public class ProbTable {
             }
         }
         count++;
-        if(count>9000){
+        if(count>90){
+            //count=0;
             log.warning("Set running=false@");
-            //Main.setRunning(false);
+            Main.setRunning(false);
         }
         return false;
     }
@@ -303,4 +308,44 @@ public class ProbTable {
             }
         }
     }
+        @Override
+     public String toString(){
+         StringBuffer s=new StringBuffer();
+         for (int i=1;i<10;i++){
+             for(int j=1;j<10;j++){
+                 s.append(" ");
+                 s.append(data[i][j]);
+             }
+             s.append("\n");
+         }
+         return s.toString();
+     }
+        public int [] get_col_variance(int col){
+            int max=0,sec=0,row=0;
+            for(int i=1;i<10;i++){
+                if(data[i][col]>max&&data[i][col]!=ProbTable.GUESS_MAX){
+                    sec=max;
+                    max=data[i][col];
+                    row=i;
+                }
+                if(data[i][col]>max&&data[i][col]!=ProbTable.GUESS_MAX)
+                    sec=data[i][col];
+            }
+            return new int [] { max-sec,row };
+        }
+        public int [] get_row_variance(int row){
+            int max=0,sec=0,col=0;
+            for(int i=1;i<10;i++){
+                if(data[row][i]>max&&data[row][i]!=ProbTable.GUESS_MAX){
+                    sec=max;
+                    max=data[i][row];
+                    col=i;
+                }
+                else if (data[row][i]>sec&&data[row][i]!=ProbTable.GUESS_MAX)
+                    sec=data[row][i];
+            }
+            return new int []{max-sec,col};
+        }
+        
+
 }

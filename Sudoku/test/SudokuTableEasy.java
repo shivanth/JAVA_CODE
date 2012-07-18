@@ -138,7 +138,6 @@ public class SudokuTableEasy {
         Main.lock.wait();
         }
     }
-    * 
     */
     void set_data(int row,int col,int data){
         SR[row-1].getBox(col-1).setText(""+(data));
