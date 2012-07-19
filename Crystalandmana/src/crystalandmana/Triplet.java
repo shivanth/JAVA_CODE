@@ -26,6 +26,7 @@ public class Triplet {
      */
     public void setR(int r) {
         this.r = r;
+        recalculate_terms();
     }
 
     /**
@@ -40,6 +41,7 @@ public class Triplet {
      */
     public void setG(int g) {
         this.g = g;
+        recalculate_terms();
     }
 
     /**
@@ -54,6 +56,7 @@ public class Triplet {
      */
     public void setB(int b) {
         this.b = b;
+        recalculate_terms();
     }
 
     /**
@@ -71,6 +74,7 @@ public class Triplet {
         this.r=r;
         this.g=g;
         this.b=b;
+        recalculate_terms();
     }
     public void recalculate_terms(){
         product=r*g*b;
